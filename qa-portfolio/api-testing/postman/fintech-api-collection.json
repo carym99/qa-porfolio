@@ -1,0 +1,194 @@
+{
+  "info": {
+    "name": "Fintech Wallet & Payments API - QA Collection",
+    "_postman_id": "d7a2dd0b-8f9e-4b08-9b74-qa-fintech-collection",
+    "description": "Postman collection for testing fintech wallet, payments, and transaction APIs in staging.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Auth - Login (Customer)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/v1/auth/login",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "v1",
+            "auth",
+            "login"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"customer.qa+wallet@samplepay.com\",\n  \"password\": \"Password123!\"\n}"
+        }
+      },
+      "response": [],
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {",
+              "  pm.response.to.have.status(200);",
+              "});",
+              "",
+              "const json = pm.response.json();",
+              "pm.test(\"Auth token present\", function () {",
+              "  pm.expect(json).to.have.property('token');",
+              "});",
+              "",
+              "// Store token for subsequent requests",
+              "pm.environment.set('authToken', json.token);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Wallet - Transfer",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{authToken}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/v1/wallets/transfer",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "v1",
+            "wallets",
+            "transfer"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"sourceWalletId\": \"{{sourceWalletId}}\",\n  \"destinationWalletId\": \"{{destinationWalletId}}\",\n  \"amount\": 25.00,\n  \"currency\": \"{{testCurrency}}\",\n  \"clientReference\": \"WTX-{{timestamp}}\",\n  \"description\": \"QA wallet transfer\"\n}"
+        }
+      },
+      "response": [],
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const tests = require('../api-test-scripts/postman-tests');",
+              "",
+              "tests.assertSuccessTransfer(pm);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Payments - Authorize",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{authToken}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/v1/payments/authorize",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "v1",
+            "payments",
+            "authorize"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"amount\": 75.00,\n  \"currency\": \"{{testCurrency}}\",\n  \"merchantId\": \"{{merchantId}}\",\n  \"orderReference\": \"ORD-{{timestamp}}\",\n  \"paymentMethod\": {\n    \"type\": \"CARD\",\n    \"token\": \"tok_visa_qa_4111\"\n  }\n}"
+        }
+      },
+      "response": [],
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const tests = require('../api-test-scripts/postman-tests');",
+              "",
+              "tests.assertPaymentAuthorization(pm);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Transactions - Requery by Reference",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{authToken}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/v1/transactions/{{transactionReference}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "v1",
+            "transactions",
+            "{{transactionReference}}"
+          ]
+        }
+      },
+      "response": [],
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const tests = require('../api-test-scripts/postman-tests');",
+              "",
+              "tests.assertTransactionRequery(pm);"
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "event": [],
+  "variable": [
+    {
+      "key": "timestamp",
+      "value": "{{$timestamp}}"
+    }
+  ]
+}
+

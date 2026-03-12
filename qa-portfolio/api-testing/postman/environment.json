@@ -1,0 +1,40 @@
+{
+  "id": "f0c04f2a-6fe1-4fb5-8f96-qa-fintech-env",
+  "name": "Fintech QA Staging",
+  "values": [
+    {
+      "key": "baseUrl",
+      "value": "https://staging-api.samplepay.com",
+      "enabled": true
+    },
+    {
+      "key": "authToken",
+      "value": "{{generated_at_runtime}}",
+      "enabled": true
+    },
+    {
+      "key": "sourceWalletId",
+      "value": "WALLET-1001",
+      "enabled": true
+    },
+    {
+      "key": "destinationWalletId",
+      "value": "WALLET-2001",
+      "enabled": true
+    },
+    {
+      "key": "testCurrency",
+      "value": "USD",
+      "enabled": true
+    },
+    {
+      "key": "merchantId",
+      "value": "MRC-10001",
+      "enabled": true
+    }
+  ],
+  "_postman_variable_scope": "environment",
+  "_postman_exported_at": "2026-03-12T10:00:00.000Z",
+  "_postman_exported_using": "Postman/11.0.0"
+}
+
